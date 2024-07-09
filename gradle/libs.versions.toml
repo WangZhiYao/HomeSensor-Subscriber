@@ -1,7 +1,7 @@
 [versions]
 spring-boot = "3.3.1"
 dependency-management = "1.1.6"
-kotlin = "1.9.24"
+kotlin = "2.0.0"
 
 [libraries]
 junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher" }
