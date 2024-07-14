@@ -35,8 +35,11 @@ class MQTTClient:
         self.client.on_message = self.on_message
 
     def on_connect(self, client, userdata, flags, reason_code, properties):
-        logging.info("Connected to MQTT broker")
-        self.client.subscribe(settings.mqtt_subscriber_topic)
+        if reason_code == mqtt.MQTT_ERR_SUCCESS:
+            logging.info(f"Connected to MQTT broker {settings.mqtt_host}:{settings.mqtt_port}")
+            self.client.subscribe(settings.mqtt_subscriber_topic)
+        else:
+            logging.info(f"Failed to connect to MQTT broker {settings.mqtt_host}:{settings.mqtt_port} {reason_code}")
 
     def on_message(self, client, userdata, msg):
         topic = msg.topic
@@ -56,6 +59,15 @@ class MQTTClient:
             logging.error(f"Error connecting to MQTT broker: {e}")
             raise
 
+    async def disconnect(self):
+        logging.info("Disconnecting from MQTT broker")
+        try:
+            self.client.loop_stop()
+            self.client.disconnect()
+            logging.info("Disconnected from MQTT broker")
+        except Exception as e:
+            logging.error(f"Error disconnecting from MQTT broker: {e}")
+
 
 async def main():
     try:
@@ -71,7 +83,7 @@ async def main():
 
         async def wait_for_stop():
             await stop_event.wait()
-            mqtt_client.client.loop_stop()
+            await mqtt_client.disconnect()
             logging.info("MQTT client stopped.")
 
         stop_task = loop.create_task(wait_for_stop())
