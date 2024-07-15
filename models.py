@@ -7,7 +7,7 @@ from pydantic import Field
 
 class DataType(StrEnum):
     THP = 'thp'
-    LIGHT = 'light'
+    ILLUMINANCE = 'illuminance'
 
 
 class SensorData(Document):
