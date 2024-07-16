@@ -37,7 +37,12 @@ class MQTTClient:
     def on_connect(self, client, userdata, flags, reason_code, properties):
         if reason_code == mqtt.MQTT_ERR_SUCCESS:
             logging.info(f"Connected to MQTT broker {settings.mqtt_host}:{settings.mqtt_port}")
-            self.client.subscribe(settings.mqtt_subscriber_topic)
+            topic = settings.mqtt_subscriber_topic
+            result, mid = self.client.subscribe(topic)
+            if result == mqtt.MQTT_ERR_SUCCESS:
+                logging.info(f"Subscribed to topic {topic}")
+            else:
+                logging.error(f"Error subscribing to topic [{topic}] {result} {mid}")
         else:
             logging.info(f"Failed to connect to MQTT broker {settings.mqtt_host}:{settings.mqtt_port} {reason_code}")
 
